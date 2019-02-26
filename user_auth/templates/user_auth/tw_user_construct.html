@@ -1,0 +1,34 @@
+{% extends "./_base.html" %}
+{% block content %}
+<div>
+  <form id="tw_user_construct" method="POST">
+    {% csrf_token %}
+    このボタンで更新プログラムが実行されます。 ->
+    <input id="bottom", type="submit" value="submit" />
+  </form>
+</div>
+<div>
+  <a href="{% url 'top' %}"><p>Top</p></a>
+</div>
+<table class="table table-striped">
+  <h3>History</h3>
+  <thead>
+    <tr>
+      <th>modified_at</th>
+      <th>proccess_time</th>
+      <th>created_count</th>
+      <th>updated_count</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for recode in recodes  %}
+    <tr>
+      <td>{{ recode.modified_at }}</td>
+      <td>{{ recode.p_time }}</td>
+      <td>{{ recode.created_count }}</td>
+      <td>{{ recode.updated_count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

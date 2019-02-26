@@ -1,0 +1,103 @@
+{% extends "./_base.html" %}
+{% block content %}
+<div class="container">
+  <div class="row align-items-center">
+    <div class="col">
+      <a class="btn btn-outline-secondary"
+	 href="{% url 'top' %}">Top Page</a>
+    </div>
+    <div class="col">
+    </div>
+    <div class="col">
+      <a class="btn btn-outline-secondary"
+	 href="{% url 'rq_create' %}">Set a New Queue</a>
+    </div>
+  </div>
+
+  <div class="row align-items-center m-1">
+    <div class="col">
+      <form name="rq_do" action="{% url 'rq_do'%}" method="POST">
+	{% csrf_token %}
+	<input type="hidden" id="rq_do_mode" name="rq_do_mode" value="all">
+	<input class="btn-outline-primary" type="submit" value="reRetweet all">
+      </form>
+      <div id="rq_do_result"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <table class="table table-striped">
+    <thead class="thead-light">
+      <tr>
+	<th>author</th>
+	<th>created</th>
+	<th>last<br>retweeted</th>
+	<th>retweet</th>
+	<th>favorite</th>
+	<th>retweeted</th>
+	<th>text</th>
+	<th>in<br>twitter</th>
+	<th>running</th>
+	<th>detail</th>
+	<th>update</th>
+	<th>delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for queue in retweetqueue_list %}
+      <tr>
+	<td>{{ queue.user_name }}</td>
+	<td>{{ queue.created_at }}</td>
+	<td>{{ queue.last_retweeted_at }}</td>
+	<td>{{ queue.retweet_count }}</td>
+	<td>{{ queue.favorite_count }}</td>
+	<td>{{ queue.retweeted }}</td>
+	<td>{{ queue.text }}</td>
+	<th><a href="https://twitter.com/{{ queue.user_name }}/status/{{ queue.status_id }}">Twitter<a></th>
+	<td>{{ queue.running }}</td>
+	<td><a href="{% url 'rq_detail' queue.id %}">Detail</a></td>
+	<td><a href="{% url 'rq_update' queue.id %}">Update</a></td>
+	<td><a href="{% url 'rq_delete' queue.id %}">Delete</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <a class="twitter-timeline"
+	 data-lang="ja"
+	 data-height="200"
+	 data-tweet-limit="10"
+	 data-chrome="nofooter"
+ 	 href="https://twitter.com/{{ screen_name }}?ref_src=twsrc%5Etfw">
+	Tweets by {{ screen_name }}</a>
+      <script async
+	      src="https://platform.twitter.com/widgets.js"
+	      charset="utf-8">
+      </script>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+ $('form').submit( function(event){
+   event.preventDefault();
+   var form = $(this);
+   $.ajax({
+     url: form.prop('action'),
+     method: form.prop('method'),
+     data: form.serialize()+"&user_id={{ user_id }}",
+     timeout: 10000,
+     dataType: 'text',
+   })
+    .done(function(data){
+      $('#rq_do_result').text(data);
+    })
+ });
+</script>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends "./_base.html" %}
+{% block content %}
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-followers-tab"
+       data-toggle="tab" href="#nav-followers" role="tab"
+       aria-controls="nav-followers" aria-selected="true">
+      followers
+    </a>
+    <a class="nav-item nav-link" id="nav-friends-tab"
+       data-toggle="tab" href="#nav-friends" role="tab"
+       aria-controls="nav-friends" aria-selected="false">
+      friends
+    </a>
+    <a class="nav-item nav-link" id="nav-fol_ni_fri-tab"
+       data-toggle="tab" href="#nav-fol_ni_fri" role="tab"
+       aria-controls="nav-fol_ni_fri" aria-selected="false">
+      followers not in friends</a>
+    <a class="nav-item nav-link" id="nav-fri_ni_fol-tab"
+       data-toggle="tab" href="#nav-fri_ni_fol" role="tab"
+       aria-controls="nav-fri_ni_fol" aria-selected="false">
+      friends not in followers</a>
+  </div>
+</nav>
+
+<div class="tab-content mt-3" id="nav-tabContent">
+  <div class="tab-pane active" id="nav-followers"
+       role="tabpanel" aria-labelledby="nav-followers-tab">
+
+    <table class="table table-striped">
+      <thead>
+	<tr>
+	  <td>name(link)</td>
+	  <td>description</td>
+	  <td>tweets</td>
+	  <td>followers</td>
+	  <td>friends</td>
+	  <td>favourites</td>
+	  <td>protected</td>
+	  <td>button</td>
+	</tr>
+      </thead>
+      <tbody>
+	{% for follower in followers %}
+	<tr>
+	  <td style="font-size:12px">
+	    <a href="https://twitter.com/{{ follower.screen_name }}"
+	       target="_blank">
+	      <img src="{{ follower.profile_image_url }}"
+		   height="36pt"/>
+	      {{ follower.name }}
+	    </a>
+	  </td>
+	  <td style="font-size:12px">{{ follower.description|truncatechars:50 }}</td>
+	  <td>{{ follower.statuses_count }}</td>
+	  <td>{{ follower.followers_count }}</td>
+	  <td>{{ follower.friends_count }}</td>
+	  <td>{{ follower.favourites_count }}</td>
+	  <td>{{ follower.protected }}</td>
+	  <td>
+	    <a href="https://twitter.com/{{ follower.screen_name }}?ref_src=twsrc%5Etfw"
+	       class="twitter-follow-button"
+	       data-show-count="false">
+	      Follow
+	    </a>
+	  </td>
+	</tr>
+	{% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="tab-pane" id="nav-friends"
+       role="tabpanel" aria-labelledby="nav-friends-tab">
+    <table class="table table-striped">
+      <thead>
+	<tr>
+	  <td>name(link)</td>
+	  <td>description</td>
+	  <td>tweets</td>
+	  <td>followers</td>
+	  <td>friends</td>
+	  <td>favourites</td>
+	  <td>protected</td>
+	  <td>button</td>
+	</tr>
+      </thead>
+      <tbody>
+	{% for friend in friends %}
+	<tr>
+	  <td style="font-size:12px">
+	    <a href="https://twitter.com/{{ friend.screen_name }}"
+	       target="_blank">
+	      <img src="{{ friend.profile_image_url }}"
+		   height="36pt"/> {{ friend.name }}
+	    </a>
+	  </td>
+	  <td style="font-size:12px">{{ friend.description|truncatechars:50 }}</td>
+	  <td>{{ friend.statuses_count }}</td>
+	  <td>{{ friend.followers_count }}</td>
+	  <td>{{ friend.friends_count }}</td>
+	  <td>{{ friend.favourites_count }}</td>
+	  <td>{{ friend.protected }}</td>
+	  <td></td>
+	</tr>
+	{% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tab-pane fade" id="nav-fol_ni_fri"
+       role="tabpanel" aria-labelledby="nav-fol_ni_fri-tab">
+    <table class="table table-striped">
+      <thead>
+	<tr>
+	  <td>name(link)</td>
+	  <td>description</td>
+	  <td>tweets</td>
+	  <td>followers</td>
+	  <td>friends</td>
+	  <td>favourites</td>
+	  <td>protected</td>
+	  <td>button</td>
+	</tr>
+      </thead>
+      <tbody>
+	{% for follower in fol_ni_fri %}
+	<tr>
+	  <td style="font-size:12px">
+	    <a href="https://twitter.com/{{ follower.screen_name }}"
+	       target="_blank">
+	      <img src="{{ follower.profile_image_url }}"
+		   height="36pt"/> {{ follower.name }}
+	    </a>
+	  </td>
+	  <td style="font-size:12px">{{ follower.description|truncatechars:50 }}</td>
+	  <td>{{ follower.statuses_count }}</td>
+	  <td>{{ follower.followers_count }}</td>
+	  <td>{{ follower.followers_count }}</td>
+	  <td>{{ follower.favourites_count }}</td>
+	  <td>{{ follower.protected }}</td>
+	  <td>
+	    <a href="https://twitter.com/{{ follower.screen_name }}?ref_src=twsrc%5Etfw"
+	       class="twitter-follow-button"
+	       data-show-count="false">
+	      Follow
+	    </a>
+	  </td>
+	</tr>
+	{% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tab-pane fade" id="nav-fri_ni_fol"
+       role="tabpanel" aria-labelledby="nav-fri_ni_fol-tab">
+    <table class="table table-striped">
+      <thead>
+	<tr>
+	  <td>name(link)</td>
+	  <td>description</td>
+	  <td>tweets</td>
+	  <td>followers</td>
+	  <td>friends</td>
+	  <td>favourites</td>
+	  <td>protected</td>
+	  <td>button</td>
+	</tr>
+      </thead>
+      <tbody>
+	{% for friend in fri_ni_fol %}
+	<tr>
+	  <td style="font-size:12px">
+	    <a href="https://twitter.com/{{ friend.screen_name }}"
+	       target="_blank">
+	      <img src="{{ friend.profile_image_url }}"
+		   height="36pt"/><br> {{ friend.name }}
+	    </a>
+	  </td>
+	  <td style="font-size:12px">{{ friend.description|truncatechars:50 }}</td>
+	  <td>{{ friend.statuses_count }}</td>
+	  <td>{{ friend.followers_count }}</td>
+	  <td>{{ friend.friends_count }}</td>
+	  <td>{{ friend.favourites_count }}</td>
+	  <td>{{ friend.protected }}</td>
+	  <td></td>
+	</tr>
+	{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+{% endblock %}

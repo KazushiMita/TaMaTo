@@ -1,0 +1,42 @@
+{% extends "./_base.html" %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-10">
+      統計情報を再取得（計算）するには、右のボタンを押してください。（Twiter apiにアクセスするため、連続して押すとRate limitに引っかかり15分ほど、Twitter apiにはアクセスできなくなのでご注意ください。）
+    </div>
+    <div class="col-2">
+      {% if status == 1 %}
+      <button type="button" class="btn btn-outline-secondary" disabled="disabled">Done</button>
+      {% else %}
+      <form id="renew_stat" method="POST">
+	{% csrf_token %}
+	<input class="btn btn-primary" type="submit" value="submit"/>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">screen name:</div>
+    <div class="col">{{ screen_name }}</div>
+  </div>
+  <div class="row">
+    <table class="table table-striped">
+      <thead>
+	<tr>
+	  <th>term</th>
+	  <th>number</th>
+	</tr>
+      </thead>
+      <tbody>
+	{% for stat in stats %}
+	<tr>
+	  <td>{{ stat.term }}</td>
+	  <td>{{ stat.number }}</td>
+	</tr>
+	{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

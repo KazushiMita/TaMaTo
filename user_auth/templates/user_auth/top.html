@@ -1,0 +1,102 @@
+{% extends "./_base.html" %}
+{% block content %}
+<br>
+<br>
+
+<div class="container">
+  <div class="row border-bottom m-2">
+    <h2>データベースの更新</h2>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-2">データベースを更新</div>
+    <div class="col-4"><a href="{% url 'tuc' %}">更新</a></div>
+    <div class="w-100"></div>
+    <div class="col-2">最新更新日</div>
+    <div class="col-4">
+      {{ recent_recode.modified_at|date:"Y年n月j日(D) G:i:s"}}</div>
+  </div>
+</div>
+
+<br>
+<br>
+
+<div class="container">
+  <div class="row border-bottom m-2">
+    <h2>機能</h2>
+  </div>
+  <div class="row">
+    <div class="col-3 p-1">
+      <a href="{% url 'tw_user' 'followers' %}"
+	 class="btn btn-primary btn-lg">
+	Twitter Users List (FollowerRanking)</a>
+    </div>
+    <div class="col-3 p-1">
+      <a href="{% url 'stats' %}"
+	 class="btn btn-primary btn-lg">
+	Users Statistics</a>
+    </div>
+    <div class="col-3 p-1">
+      <a href=""
+	 class="btn btn-primary btn-lg">
+	ActingUsers (Fol,Rep,RT,Fav)</a>
+    </div>
+    <div class="col-3 p-1">
+      <a href="{% url 'rqs' %}"
+	 class="btn btn-primary btn-lg">
+	Re-Retweet Queues</a>
+    </div>
+  </div>
+</div>
+
+<br>
+<br>
+
+<div class="container">
+  <div class="row border-bottom m-2">
+    <div class="col">
+      <h2>Logined User</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-2">
+      <p><b>ScreenName:</b></p>
+    </div>
+    <div class="col-2">
+      <p>{{ user.access_token.screen_name }}</p>
+    </div>
+  </div>
+</div>
+
+
+<!--
+<div class="container">
+  <h2>Ajax test</h2>
+  <form name="name_form" action="" method="POST">
+    {% csrf_token %}
+    <input type="text" id="id_input_text" name="name_input_text" value="999.99">
+    <input class="btn" type="submit">
+  </form>
+  <div id="id_div_ajax_response">Ajax Response:</div>
+</div>
+-->
+{% endblock %}
+
+
+{% block script %}
+<script>
+  $("form").submit( function(event) {
+      event.preventDefault();
+      var form = $(this)
+      $.ajax({
+          url: form.prop("action"),
+          method: form.prop("method"),
+          data: form.serialize(),
+          timeout: 10000,
+          dataType: "text",
+      })
+          .done( function(data) {
+              $("#id_div_ajax_response").text(data);
+	  })
+  });
+</script>
+{% endblock %}

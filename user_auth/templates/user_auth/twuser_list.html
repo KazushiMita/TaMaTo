@@ -1,0 +1,44 @@
+{% extends "./_base.html" %}
+{% block title %}{{ mode }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row m-1 p-1">
+    <div class="col-3">
+      <a class="btn btn-block btn-primary" href="{% url 'tw_user' 'followers' %}">Followers</a>
+    </div>
+    <div class="col-3">
+      <a class="btn btn-block btn-primary" href="{% url 'tw_user' 'friends' %}">Friends</a>
+    </div>
+    <div class="col-3">
+      <a class="btn btn-block btn-primary" href="{% url 'tw_user' 'fol_not_in_fri' %}">Followers not in Friends</a>
+    </div>
+    <div class="col-3">
+      <a class="btn btn-block btn-primary" href="{% url 'tw_user' 'fri_not_in_fol' %}">Friends not in Followers</a>
+    </div>
+</div>
+
+<div class="container">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+	  <td>name(link)</td>
+	  <td>description</td>
+	  <td>tweets</td>
+	  <td>followers</td>
+	  <td>friends</td>
+	  <td>favourites</td>
+	  <td>protected</td>
+	  <td>button</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in object_list %}
+      <tr>
+	<td>{{ user.screen_name }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

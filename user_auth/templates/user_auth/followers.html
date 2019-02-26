@@ -1,0 +1,26 @@
+{% extends "./_base.html" %}
+{% block content %}
+<h2>Followers of {{ user.screen_name }}</h2>
+<table>
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>ScreenName</th>
+      <th>FollowersCount</th>
+      <th>follow</th>
+      <th>button</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for follower in followers %}
+    <tr>
+      <td>{{ follower.id }}</td>
+      <td>{{ follower.screen_name }}</td>
+      <td>{{ follower.followers_count }}</td>
+      <td>{{ follower.protected }}</td>
+      <td><button type="submit" class="btn btn-primary"></button></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

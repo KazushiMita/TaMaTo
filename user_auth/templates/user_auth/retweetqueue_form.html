@@ -1,0 +1,20 @@
+{% extends "./_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{{ form.certifications.errors }}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <a class="btn btn-outline-secondary" href="{% url 'top' %}">Top Page</a>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary">Resister</button>
+  </form>
+</div>
+{% endblock %}
