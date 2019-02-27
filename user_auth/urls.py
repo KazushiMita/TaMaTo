@@ -12,6 +12,8 @@ urlpatterns=[
     #
     path('statistics/', views.StatsView.as_view(), name='stats'),
     #
+    path('actedusers/', views.ActedUserList.as_view(), name='actedusers'),
+    #
     path('retweet_queues/', views.RetweetQueueListView.as_view(), name='rqs'),
     path('retweet_queue_create/',
          views.RetweetQueueCreateView.as_view(),

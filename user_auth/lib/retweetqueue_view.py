@@ -37,8 +37,7 @@ class RetweetQueueCreateView(CreateView, LoginRequiredMixin):
         self.object = form.save(commit=False)
         user, tw_user_api = getLoginedUserAndAnthorizedApi(self.request)
         status = tw_user_api.get_status(self.object.status_id)
-        self.object.logined_user_id = UserSocialAuth.objects.get(
-            id=self.request.user.id)
+        self.object.logined_user_id = UserSocialAuth.objects.get(id=self.request.user.id)
         self.object.user_name = status.user.name
         self.object.created_at = status.created_at.astimezone()
         self.object.retweet_count = status.retweet_count
@@ -79,7 +78,7 @@ def doReretweetAndRefavorite(request):
         user, tw_user_api = getLoginedUserAndAnthorizedApi(
             request='', user_id=user_id)
         for target in RetweetQueue.objects.filter(
-                logined_user_id=user.id, running=True):
+                logined_user_id=request.user.id, running=True):
             time.sleep(0.5)
             status = tw_user_api.get_status(target.status_id, include_my_retweet=1)
             if status.retweeted == True:

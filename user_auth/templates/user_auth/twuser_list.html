@@ -1,6 +1,6 @@
 {% extends "./_base.html" %}
 {% block title %}{{ mode }}{% endblock %}
-
+{% load static %}
 {% block content %}
 <div class="container">
   <div class="row m-1 p-1">
@@ -19,26 +19,109 @@
 </div>
 
 <div class="container">
+  {% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>&nbsp;
+    {% else %}
+    <li class="disabled"><span>&laquo;</span></li>&nbsp;
+    {% endif %}
+    {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+    &nbsp;<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>&nbsp;
+    {% else %}
+    &nbsp;<li><a class="border" href="?page={{ i }}">&nbsp;{{ i }}&nbsp;</a></li>&nbsp;
+    {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    &nbsp;<li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+    &nbsp;<li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+  {% endif %}
+
   <table class="table table-striped">
-    <thead>
+    <thead class="thead-light">
       <tr>
-	  <td>name(link)</td>
-	  <td>description</td>
-	  <td>tweets</td>
-	  <td>followers</td>
-	  <td>friends</td>
-	  <td>favourites</td>
-	  <td>protected</td>
-	  <td>button</td>
+	<td>#</td>
+	<td>name(link)</td>
+	<td>description</td>
+	<td>tweets</td>
+	<td>followers</td>
+	<td>friends</td>
+	<td>favourites</td>
+	<td>p</td>
+	<td>button</td>
+	<td>neglect</td>
       </tr>
     </thead>
     <tbody>
       {% for user in object_list %}
       <tr>
-	<td>{{ user.screen_name }}</td>
+	<td>{{ count_pre_page|add:forloop.counter }}</td>
+	<td style="font-size:12px">
+	  <a href="https://twitter.com/{{ user.screen_name }}"
+	     target="_blank">
+	    <img src="{{ user.profile_image_url }}"
+		 height="36pt"/>
+	    {{ user.name }}
+	  </a>
+	</td>
+	<td style="font-size:12px">{{ user.description|truncatechars:50 }}</td>
+	<td>{{ user.statuses_count }}</td>
+	<td>{{ user.followers_count }}</td>
+	<td>{{ user.friends_count }}</td>
+	<td>{{ user.favourites_count }}</td>
+	<td>
+	  {% if user.protected is True %}
+	  <img src={% static '/protected.png' %} />
+	  {% else %}
+	  {% endif %}
+	</td>
+	<td>
+	  {% if mode == 'followers' or mode == 'fol_not_in_fri' %}
+	  <a href="https://twitter.com/{{ user.screen_name }}?ref_src=twsrc%5Etfw"
+	     class="twitter-follow-button"
+	     data-show-count="false">
+	    Follow
+	  </a>
+	  {% endif%}
+	</td>
+	<td><button style="font-size:12px" class="btn btn-danger btn-xs" id="neglect">neglect</button></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+
+  {% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>&nbsp;
+    {% else %}
+    <li class="disabled"><span>&laquo;</span></li>&nbsp;
+    {% endif %}
+    {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+    &nbsp;<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>&nbsp;
+    {% else %}
+    &nbsp;<li><a class="border" href="?page={{ i }}">&nbsp;{{ i }}&nbsp;</a></li>&nbsp;
+    {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    &nbsp;<li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+    &nbsp;<li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+  {% endif %}
+
 </div>
+{% endblock %}
+
+{% block script %}
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<script>
+
+</script>
 {% endblock %}

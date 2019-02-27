@@ -15,14 +15,15 @@ class UserLogoutView(LogoutView):
 
 
 class TopView(TemplateView, LoginRequiredMixin):
+    """request.user.id == UserSocialAuth.user_id"""
     template_name = 'user_auth/top.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = getLoginedUser(self.request)
         context['user'] = user
-        context['recent_recode'] =\
-            Recode.objects.filter(logined_user_id=user.id).order_by('-modified_at').first()
+        context['recent_recode'] = Recode.objects.filter(
+            logined_user_id=user.user_id).order_by('-modified_at').first()
         return context
 
 
@@ -34,3 +35,6 @@ from user_auth.lib.retweetqueue_view import RetweetQueueListView,\
     RetweetQueueCreateView, RetweetQueueDeleteView, RetweetQueueDetailView,\
     RetweetQueueUpdateView, doReretweetAndRefavorite
 
+
+class ActedUserList(TemplateView,LoginRequiredMixin):
+    template_name = "user_auth/actedusers.html"

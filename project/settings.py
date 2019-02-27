@@ -131,13 +131,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # tw api token
 # -------------
-from os.path import join, dirname
-from dotenv import load_dotenv
-load_dotenv(join(dirname(__file__), '.env'))
+from dotenv import load_dotenv # pip install python-dotenv
+load_dotenv()
 TW_API_CONSUMER_KEY = os.environ['TW_API_CONSUMER_KEY']
 TW_API_CONSUMER_SECRET = os.environ['TW_API_CONSUMER_SECRET']
 TW_API_ACCESS_TOKEN = os.environ['TW_API_ACCESS_TOKEN']
 TW_API_ACCESS_TOKEN_SECRET = os.environ['TW_API_ACCESS_TOKEN_SECRET']
+
 # for social_auth_app_django
 # ---------------------------
 AUTHENTICATION_BACKENDS = (

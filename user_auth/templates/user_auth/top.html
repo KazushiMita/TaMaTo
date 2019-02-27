@@ -36,7 +36,7 @@
 	Users Statistics</a>
     </div>
     <div class="col-3 p-1">
-      <a href=""
+      <a href="{% url 'actedusers' %}"
 	 class="btn btn-primary btn-lg">
 	ActingUsers (Fol,Rep,RT,Fav)</a>
     </div>
@@ -63,6 +63,18 @@
     </div>
     <div class="col-2">
       <p>{{ user.access_token.screen_name }}</p>
+    </div>
+    <div class="col-2">
+      <p><b>user.user_id:</b></p>
+    </div>
+    <div class="col-2">
+      <p>{{ user.user_id }}</p>
+    </div>
+    <div class="col-2">
+      <p><b>user.id:</b></p>
+    </div>
+    <div class="col-2">
+      <p>{{ user.id }}</p>
     </div>
   </div>
 </div>

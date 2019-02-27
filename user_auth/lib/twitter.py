@@ -1,5 +1,4 @@
 import tweepy
-#from project.twitter import consumer, access
 from project.settings import TW_API_CONSUMER_KEY,\
     TW_API_CONSUMER_SECRET, TW_API_ACCESS_TOKEN, TW_API_ACCESS_TOKEN_SECRET
 from social_django.models import UserSocialAuth
@@ -24,10 +23,15 @@ def getTwitterUserApi(access_token, access_token_secret):
 
 
 def getLoginedUser(request='',user_id=''):
+    print("dir(request.user) ==>",dir(request.user))
+    print("request.user.id ==>",request.user.id)
+    print("request.user.pk ==>",request.user.pk)
+    print("request.user.pk ==>",request.user.username)
+    print("request.user.social_auth ==>",request.user.social_auth)
     if request == '' :
-        return UserSocialAuth.objects.get(id=user_id)
+        return UserSocialAuth.objects.get(user_id=user_id)
     elif user_id == '':
-        return UserSocialAuth.objects.get(id=request.user.id)
+        return UserSocialAuth.objects.get(user_id=request.user.id)
     else:
         raise ValueError()
 

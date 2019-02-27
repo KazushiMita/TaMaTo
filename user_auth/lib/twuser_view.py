@@ -116,8 +116,7 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
         for friend_id in friends_ids :
             if friend_id in followers_ids:
                 obj = TWUser.objects.get(
-                    logined_user_id=UserSocialAuth.objects.get(
-                        id=self.request.user.id),
+                    logined_user_id=self.request.user.id,
                     user_id=friend_id)
                 obj.following = True
                 obj.save()
@@ -178,10 +177,7 @@ class TWUserDetailView(DetailView,LoginRequiredMixin):
 
 class TWUserListView(ListView, LoginRequiredMixin):
     model = TWUser
-    #template_name = 'user_auth/followers.html'
-    # Default: <app_label>/<model_name>_list.html
-    #context_object_name = 'followers'  # Default: object_list
-    paginate_by = 10
+    paginate_by = 30
 
     def get(self, request, *args, **kwargs):
         self.mode = kwargs['mode']
@@ -206,4 +202,10 @@ class TWUserListView(ListView, LoginRequiredMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['mode'] = self.mode
+        # counter numbering for each page
+        if 'page' in self.request.GET :
+            num = int(self.request.GET.get('page'))-1
+        else:
+            num = 0
+        context['count_pre_page'] = num * self.paginate_by
         return context
