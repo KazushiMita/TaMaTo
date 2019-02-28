@@ -25,7 +25,7 @@ SECRET_KEY = ')__8h#*pg2*ov^g8s9f31atut*%s0!zp!u6tvgc79%ii2m^!*z'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'http://kazushimita.pythonanywhere.com/']
 
 
 # Application definition

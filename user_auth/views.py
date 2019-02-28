@@ -36,5 +36,4 @@ from user_auth.lib.retweetqueue_view import RetweetQueueListView,\
     RetweetQueueUpdateView, doReretweetAndRefavorite
 
 
-class ActedUserList(TemplateView,LoginRequiredMixin):
-    template_name = "user_auth/actedusers.html"
+from user_auth.lib.actedusers_view import ActedUserList

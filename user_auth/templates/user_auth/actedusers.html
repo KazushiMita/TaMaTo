@@ -3,7 +3,35 @@
 {% block title %}Acted Users - TaMaTo{% endblock %}
 
 {% block content %}
-
+<div class="container">
+  <div class="row m-3">
+    <div class="col">
+      <form method="POST">
+	{% csrf_token %}
+	<input name="mode" type="submit" value="Get users who acted on me"/>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <table class="table table-striped">
+	<thead>
+	  <tr>
+	    <th>#</th>
+	    <th>name</th>
+	    <th>followers</th>
+	    <th>button</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr>
+	    <td></td>
+	  </tr>
+	</tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block script %}
