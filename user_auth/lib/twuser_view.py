@@ -184,19 +184,28 @@ class TWUserListView(ListView, LoginRequiredMixin):
         self.mode = kwargs['mode']
         if self.mode == 'followers':
             self.queryset = TWUser.objects.filter(
-                logined_user_id=self.request.user.id, followed=True
+                logined_user_id=self.request.user.id,
+                followed=True, neglect=False,
             ).order_by('-followers_count')
         elif self.mode == 'friends':
             self.queryset = TWUser.objects.filter(
-                logined_user_id=self.request.user.id, following=True
+                logined_user_id=self.request.user.id,
+                following=True, neglect=False,
             ).order_by('-followers_count')
         elif self.mode == 'fol_not_in_fri':
             self.queryset = TWUser.objects.filter(
-                logined_user_id=self.request.user.id, followed=True, following=False
+                logined_user_id=self.request.user.id,
+                followed=True, following=False, neglect=False,
             ).order_by('-followers_count')
         elif self.mode == 'fri_not_in_fol':
             self.queryset = TWUser.objects.filter(
-                logined_user_id=self.request.user.id, followed=False, following=True
+                logined_user_id=self.request.user.id,
+                followed=False, following=True, neglect=False,
+            ).order_by('-followers_count')
+        elif self.mode == 'neglected':
+            self.queryset = TWUser.objects.filter(
+                logined_user_id=self.request.user.id,
+                neglect=True,
             ).order_by('-followers_count')
         return super().get(request, *args, **kwargs)
 
@@ -218,13 +227,12 @@ def on_click_follow(request):
     _, tw_user_api = getLoginedUserAndAnthorizedApi(request)
     target = tw_user_api.get_user(target_user_id)
     target.follow()
-    target_obj = TWUser.objects.get(user_id=target_user_id)
+    target_obj = TWUser.objects.get(
+        logined_user_id=logined_user_id, user_id=target_user_id)
     target_obj.following = True
     target_obj.save()
-    print('logined_user_id=',logined_user_id,' follow to user_id',target_user_id)
-    ret = {
-        'user_id':target_user_id,
-        'logined_user_id':logined_user_id,
+    ret = { 'user_id':target_user_id,
+            'logined_user_id':logined_user_id,
     }
     return JsonResponse(ret)
 
@@ -233,12 +241,35 @@ def on_click_unfollow(request):
     logined_user_id = request.user.id
     _, tw_user_api = getLoginedUserAndAnthorizedApi(request)
     target = tw_user_api.destroy_friendship(target_user_id)
-    target_obj = TWUser.objects.get(user_id=target_user_id)
+    target_obj = TWUser.objects.get(
+        logined_user_id=logined_user_id, user_id=target_user_id)
     target_obj.following = False
     target_obj.save()
-    print('logined_user_id=',logined_user_id,' unfollow to user_id',target_user_id)
-    ret = {
-        'user_id':target_user_id,
-        'logined_user_id':logined_user_id,
+    ret = { 'user_id':target_user_id,
+            'logined_user_id':logined_user_id,
+    }
+    return JsonResponse(ret)
+
+def on_click_neglect(request):
+    target_user_id = request.POST.get('user_id')
+    logined_user_id = request.user.id
+    target_obj = TWUser.objects.get(
+        logined_user_id=logined_user_id, user_id=target_user_id)
+    target_obj.neglect = True
+    target_obj.save()
+    ret = { 'user_id':target_user_id,
+            'logined_user_id':logined_user_id,
+    }
+    return JsonResponse(ret)
+
+def on_click_respect(request):
+    target_user_id = request.POST.get('user_id')
+    logined_user_id = request.user.id
+    target_obj = TWUser.objects.get(
+        logined_user_id=logined_user_id, user_id=target_user_id)
+    target_obj.neglect = False
+    target_obj.save()
+    ret = { 'user_id':target_user_id,
+            'logined_user_id':logined_user_id,
     }
     return JsonResponse(ret)

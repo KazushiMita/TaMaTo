@@ -11,6 +11,8 @@ urlpatterns=[
     path('tw_user/<slug:mode>',views.TWUserListView.as_view(),name='tw_user'),
     path('tw_user/follow/',views.on_click_follow,name='tw_follow'),
     path('tw_user/unfollow/',views.on_click_unfollow,name='tw_unfollow'),
+    path('tw_user/neglect/',views.on_click_neglect,name='tw_neglect'),
+    path('tw_user/respect/',views.on_click_respect,name='tw_respect'),
     #
     path('statistics/', views.StatsView.as_view(), name='stats'),
     #

@@ -20,110 +20,31 @@
   </div>
 </div>
 
-<div class="container" hidden>
-  {% if is_paginated %}
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>&nbsp;
-    {% else %}
-    <li class="disabled"><span>&laquo;</span></li>&nbsp;
-    {% endif %}
-    {% for i in paginator.page_range %}
-    {% if page_obj.number == i %}
-    &nbsp;<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>&nbsp;
-    {% else %}
-    &nbsp;<li><a class="border" href="?page={{ i }}">&nbsp;{{ i }}&nbsp;</a></li>&nbsp;
-    {% endif %}
-    {% endfor %}
-    {% if page_obj.has_next %}
-    &nbsp;<li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
-    {% else %}
-    &nbsp;<li class="disabled"><span>&raquo;</span></li>
-    {% endif %}
-  </ul>
-  {% endif %}
-
-  <table class="table table-striped">
-    <thead class="thead-light">
-      <tr>
-	<td>#</td>
-	<td>name(link)</td>
-	<td>description</td>
-	<td>tweets</td>
-	<td>followers</td>
-	<td>friends</td>
-	<td>favourites</td>
-	<td>p</td>
-	<td>button</td>
-	<td>neglect</td>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in object_list %}
-      <tr>
-	<td>{{ count_pre_page|add:forloop.counter }}</td>
-	<td style="font-size:12px">
-	  <a href="https://twitter.com/{{ user.screen_name }}"
-	     target="_blank">
-	    <img src="{{ user.profile_image_url }}"
-		 height="36pt"/>
-	    {{ user.name }}
-	  </a>
-	</td>
-	<td style="font-size:12px">{{ user.description|truncatechars:50 }}</td>
-	<td>{{ user.statuses_count }}</td>
-	<td>{{ user.followers_count }}</td>
-	<td>{{ user.friends_count }}</td>
-	<td>{{ user.favourites_count }}</td>
-	<td>
-	  {% if user.protected is True %}
-	  <img src={% static '/protected.png' %} />
-	  {% else %}
-	  {% endif %}
-	</td>
-	<td>
-	  {% if mode == 'followers' or mode == 'fol_not_in_fri' %}
-	  <a href="https://twitter.com/{{ user.screen_name }}?ref_src=twsrc%5Etfw"
-	     class="twitter-follow-button"
-	     data-show-count="false">
-	    Follow
-	  </a>
-	  {% endif%}
-	</td>
-	<td><button style="font-size:12px" class="btn btn-danger btn-xs" id="neglect">neglect</button></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  {% if is_paginated %}
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>&nbsp;
-    {% else %}
-    <li class="disabled"><span>&laquo;</span></li>&nbsp;
-    {% endif %}
-    {% for i in paginator.page_range %}
-    {% if page_obj.number == i %}
-    &nbsp;<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>&nbsp;
-    {% else %}
-    &nbsp;<li><a class="border" href="?page={{ i }}">&nbsp;{{ i }}&nbsp;</a></li>&nbsp;
-    {% endif %}
-    {% endfor %}
-    {% if page_obj.has_next %}
-    &nbsp;<li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
-    {% else %}
-    &nbsp;<li class="disabled"><span>&raquo;</span></li>
-    {% endif %}
-  </ul>
-  {% endif %}
-
-</div>
-
-
 <div class="container p-0">
+  {% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>&nbsp;
+    {% else %}
+    <li class="disabled"><span>&laquo;</span></li>&nbsp;
+    {% endif %}
+    {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+    &nbsp;<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>&nbsp;
+    {% else %}
+    &nbsp;<li><a class="border" href="?page={{ i }}">&nbsp;{{ i }}&nbsp;</a></li>&nbsp;
+    {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    &nbsp;<li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+    &nbsp;<li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+  {% endif %}
+
   {% for user in object_list %}
-  <div class="card mb-3" style="width: 100%;">
+  <div class="card mb-3 card_{{ user.user_id }}" style="width: 100%;">
     <div class="row no-gutters">
       <div class="col-md-1 align-self-center text-center">
 	{{ count_pre_page|add:forloop.counter }}
@@ -177,10 +98,50 @@
 	  unfollow</button>
       </div>
       {% endif %}
-      <button style="font-size:12px" class="btn btn-danger float-right" id="neglect">neglect</button>
+      {% if user.neglect == False %}
+      <div class="neglect_{{ user.user_id }}">
+	<button style="font-size:12px"
+		class="btn btn-danger float-right neglect"
+		name="{{ user.user_id }}">
+	  neglect</button>
+      </div>
+      {% else %}
+      <div class="respect_{{ user.user_id }}">
+	<button style="font-size:12px"
+		class="btn btn-success float-right respect"
+		name="{{ user.user_id }}">
+	  respect</button>
+      </div>
+      {% endif %}
     </div>
   </div>
   {% endfor %}
+
+  {% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>&nbsp;
+    {% else %}
+    <li class="disabled"><span>&laquo;</span></li>&nbsp;
+    {% endif %}
+    {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+    &nbsp;<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>&nbsp;
+    {% else %}
+    &nbsp;<li><a class="border" href="?page={{ i }}">&nbsp;{{ i }}&nbsp;</a></li>&nbsp;
+    {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    &nbsp;<li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+    &nbsp;<li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+  {% endif %}
+
+</div>
+<div class="container">
+  <a href="{% url 'tw_user' 'neglected' %}" class="btn btn-light">Neglected List</a>
 </div>
 {% endblock %}
 
@@ -244,6 +205,40 @@
      success: function(data) {
        $( 'div.unfollow_'+data.user_id ).html('<button style="font-size:12px" class="btn btn-primary float-left follow" name="'+data.user_id+'">follow</button>');
        $( 'div.unfollow_'+data.user_id ).attr('class','follow_'+data.user_id);
+     }
+   })
+ });
+</script>
+<script>
+ $(document).on('click', '.neglect', function(event){
+   let request = { user_id : $(this).prop('name'),};
+   $.ajax({
+     url:'{% url "tw_neglect" %}',
+     method: 'POST',
+     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+     data: request,
+     async: true,
+     timeout: 10000,
+     datatype: 'json',
+     success: function(data){
+       $(".card_"+data.user_id).html('');
+     }
+   })
+ });
+
+ $(document).on('click', '.respect', function(event){
+   let request = { user_id : $(this).prop('name'),};
+   $.ajax({
+     url:'{% url "tw_respect" %}',
+     method: 'POST',
+     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+     data: request,
+     async: true,
+     timeout: 10000,
+     datatype: 'json',
+     success: function(data){
+       $("div.respect_"+data.user_id).html('<button style="font-size:12px" class="btn btn-danger float-right neglect" name="'+data.user_id+'">neglect</button>');
+       $("div.respect_"+data.user_id).attr('class','neglect_'+data.user_id);
      }
    })
  });

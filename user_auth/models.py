@@ -23,6 +23,7 @@ class TWUser(models.Model):
     followed = models.BooleanField(default=False)
     modified_at = models.DateTimeField(default=timezone.now)
     acted = models.BooleanField(default=False)
+    neglect = models.BooleanField(default=False)
     class Meta:
         unique_together = (('logined_user_id','user_id'),)
 
