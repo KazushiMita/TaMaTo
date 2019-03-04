@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, DetailView, ListView
+from django.http import JsonResponse
 
 from social_django.models import UserSocialAuth
 
@@ -209,3 +210,35 @@ class TWUserListView(ListView, LoginRequiredMixin):
             num = 0
         context['count_pre_page'] = num * self.paginate_by
         return context
+
+
+def on_click_follow(request):
+    target_user_id = request.POST.get('user_id')
+    logined_user_id = request.user.id
+    _, tw_user_api = getLoginedUserAndAnthorizedApi(request)
+    target = tw_user_api.get_user(target_user_id)
+    target.follow()
+    target_obj = TWUser.objects.get(user_id=target_user_id)
+    target_obj.following = True
+    target_obj.save()
+    print('logined_user_id=',logined_user_id,' follow to user_id',target_user_id)
+    ret = {
+        'user_id':target_user_id,
+        'logined_user_id':logined_user_id,
+    }
+    return JsonResponse(ret)
+
+def on_click_unfollow(request):
+    target_user_id = request.POST.get('user_id')
+    logined_user_id = request.user.id
+    _, tw_user_api = getLoginedUserAndAnthorizedApi(request)
+    target = tw_user_api.destroy_friendship(target_user_id)
+    target_obj = TWUser.objects.get(user_id=target_user_id)
+    target_obj.following = False
+    target_obj.save()
+    print('logined_user_id=',logined_user_id,' unfollow to user_id',target_user_id)
+    ret = {
+        'user_id':target_user_id,
+        'logined_user_id':logined_user_id,
+    }
+    return JsonResponse(ret)

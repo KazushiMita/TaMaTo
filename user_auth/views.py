@@ -28,7 +28,7 @@ class TopView(TemplateView, LoginRequiredMixin):
 
 
 from user_auth.lib.twuser_view import TWUserConstructView,\
-    TWUserDetailView, TWUserListView
+    TWUserDetailView, TWUserListView, on_click_follow, on_click_unfollow
 from user_auth.lib.stats_view import StatsView
 from user_auth.lib.retweetqueue_view import RetweetQueueListView,\
     RetweetQueueCreateView, RetweetQueueDeleteView, RetweetQueueDetailView,\

@@ -22,8 +22,10 @@ class TWUser(models.Model):
     protected = models.BooleanField(default=False)
     followed = models.BooleanField(default=False)
     modified_at = models.DateTimeField(default=timezone.now)
+    acted = models.BooleanField(default=False)
     class Meta:
         unique_together = (('logined_user_id','user_id'),)
+
 
 class Recode(models.Model):
     """recode of upadate proccess"""
@@ -52,6 +54,7 @@ class RetweetQueue(models.Model):
     running = models.BooleanField(default=False)
     class Meta:
         unique_together = (('logined_user_id','status_id'),)
+
 
 class UserStat(models.Model):
     logined_user_id = models.ForeignKey(UserSocialAuth,on_delete=False,to_field='id')

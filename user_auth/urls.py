@@ -9,6 +9,8 @@ urlpatterns=[
     path('logout/', views.UserLogoutView.as_view(), name='logout'),
     path('tw_user/construct/', views.TWUserConstructView.as_view(), name='tuc'),
     path('tw_user/<slug:mode>',views.TWUserListView.as_view(),name='tw_user'),
+    path('tw_user/follow/',views.on_click_follow,name='tw_follow'),
+    path('tw_user/unfollow/',views.on_click_unfollow,name='tw_unfollow'),
     #
     path('statistics/', views.StatsView.as_view(), name='stats'),
     #

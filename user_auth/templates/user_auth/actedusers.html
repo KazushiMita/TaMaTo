@@ -23,10 +23,15 @@
 	    <th>button</th>
 	  </tr>
 	</thead>
-	<tbody>
+	<tbody class="table table-striped">
+	  {% for au in acted_users %}
 	  <tr>
 	    <td></td>
+	    <td>{{ au.name }}</td>
+	    <td>{{ au.followers_count }}</td>
+	    <td></td>
 	  </tr>
+	  {% endfor %}
 	</tbody>
       </table>
     </div>

@@ -1,6 +1,7 @@
 {% extends "./_base.html" %}
 {% block title %}{{ mode }}{% endblock %}
 {% load static %}
+{% load humanize %}
 {% block content %}
 <div class="container">
   <div class="row m-1 p-1">
@@ -16,9 +17,10 @@
     <div class="col-3">
       <a class="btn btn-block btn-primary" href="{% url 'tw_user' 'fri_not_in_fol' %}">Friends not in Followers</a>
     </div>
+  </div>
 </div>
 
-<div class="container">
+<div class="container" hidden>
   {% if is_paginated %}
   <ul class="pagination">
     {% if page_obj.has_previous %}
@@ -117,11 +119,133 @@
   {% endif %}
 
 </div>
+
+
+<div class="container p-0">
+  {% for user in object_list %}
+  <div class="card mb-3" style="width: 100%;">
+    <div class="row no-gutters">
+      <div class="col-md-1 align-self-center text-center">
+	{{ count_pre_page|add:forloop.counter }}
+      </div>
+      <div class="col-md-3 align-self-center">
+	<div class="">
+	  <a href="https://twitter.com/{{ user.screen_name }}" target="_blank">
+	    <img class="card-img mx-auto d-block" src="{{ user.profile_image_url }}" style="height:64px; width:64px;"/>
+	  </a>
+	</div>
+      </div>
+      <div class="col-md-8">
+	<div class="card-body">
+          <h5 class="card-title">{{ user.name }}</h5>
+	  {% if user.protected is True %}
+	  <img src={% static '/protected.png' %} />
+	  {% else %}
+	  {% endif %}
+
+          <p class="card-text">
+	    <span class="badge badge-pill badge-primary">T</span>
+	    {{ user.statuses_count|intcomma }}
+	    <span class="badge badge-pill badge-primary"><</span>
+	    {{ user.followers_count|intcomma }}
+	    <span class="badge badge-pill badge-primary">></span>
+	    {{ user.friends_count|intcomma }}
+	    <span class="badge badge-pill badge-danger">L</span>
+	    {{ user.favourites_count|intcomma }}
+	  </p>
+          <p class="card-text">
+	    <small class="text-muted">
+	      <div style="font-size:0.7rem">{{ user.description|truncatechars:200 }}</div>
+	    </small>
+	  </p>
+	</div>
+      </div>
+    </div>
+    <div class="card-footer text-muted">
+      {% if user.following == False %}
+      <div class="follow_{{ user.user_id }}">
+	<button style="font-size:12px"
+		class="btn btn-primary float-left follow"
+		name="{{ user.user_id }}">
+	  follow</button>
+      </div>
+      {% else %}
+      <div class="unfollow_{{ user.user_id }}">
+	<button style="font-size:12px"
+		class="btn btn-outline-secondary float-left unfollow"
+		name="{{ user.user_id }}">
+	  unfollow</button>
+      </div>
+      {% endif %}
+      <button style="font-size:12px" class="btn btn-danger float-right" id="neglect">neglect</button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}
 
 {% block script %}
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <script>
+ function getCookie(name) {
+   var cookieValue = null;
+   if (document.cookie && document.cookie !== '') {
+     var cookies = document.cookie.split(';');
+     for (var i = 0; i < cookies.length; i++) {
+       var cookie = jQuery.trim(cookies[i]);
+       // Does this cookie string begin with the name we want?
+       if (cookie.substring(0, name.length + 1) === (name + '=')) {
+         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+         break;
+       }
+     }
+   }
+   return cookieValue;
+ }
+ var csrftoken = getCookie('csrftoken');
+ function csrfSafeMethod(method) {
+   // these HTTP methods do not require CSRF protection
+   return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+ }
+ $.ajaxSetup({
+   beforeSend: function(xhr, settings) {
+     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+       xhr.setRequestHeader("X-CSRFToken", csrftoken);
+     }
+   }
+ });
 
+ $(document).on('click', '.follow', function(event) {
+   let request = { user_id : $(this).prop('name'),};
+   $.ajax({
+     url: '{% url "tw_follow" %}',
+     method: 'POST',
+     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+     data: request,
+     async: true,
+     timeout: 10000,
+     datatype: 'json',
+     success: function(data) {
+       $( 'div.follow_'+data.user_id ).html('<button style="font-size:12px" class="btn btn-outline-secondary float-left unfollow" name="'+data.user_id+'">unfollow</button>');
+       $( 'div.follow_'+data.user_id ).attr('class','unfollow_'+data.user_id);
+     }
+   })
+ });
+
+ $(document).on('click', '.unfollow', function(event) {
+   let request = { user_id : $(this).prop('name'),};
+   $.ajax({
+     url: '{% url "tw_unfollow" %}',
+     method: 'POST',
+     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+     data: request,
+     async: true,
+     timeout: 10000,
+     datatype: 'json',
+     success: function(data) {
+       $( 'div.unfollow_'+data.user_id ).html('<button style="font-size:12px" class="btn btn-primary float-left follow" name="'+data.user_id+'">follow</button>');
+       $( 'div.unfollow_'+data.user_id ).attr('class','follow_'+data.user_id);
+     }
+   })
+ });
 </script>
 {% endblock %}
