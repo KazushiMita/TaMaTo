@@ -1,5 +1,5 @@
 {% extends "./_base.html" %}
-{% block title %}{{ mode }}{% endblock %}
+{% block title %}{{ mode }} - TaMaTo{% endblock %}
 {% load static %}
 {% load humanize %}
 {% block content %}
@@ -58,20 +58,19 @@
       </div>
       <div class="col-md-8">
 	<div class="card-body">
-          <h5 class="card-title">{{ user.name }}</h5>
+          <h5 class="card-title">{{ user.name }}
 	  {% if user.protected is True %}
 	  <img src={% static '/protected.png' %} />
-	  {% else %}
-	  {% endif %}
+	  {% endif %}</h5>
 
           <p class="card-text">
-	    <span class="badge badge-pill badge-primary">T</span>
+	    <span class="badge badge-pill badge-info">T</span>
 	    {{ user.statuses_count|intcomma }}
 	    <span class="badge badge-pill badge-primary"><</span>
 	    {{ user.followers_count|intcomma }}
-	    <span class="badge badge-pill badge-primary">></span>
+	    <span class="badge badge-pill badge-info">></span>
 	    {{ user.friends_count|intcomma }}
-	    <span class="badge badge-pill badge-danger">L</span>
+	    <span class="badge badge-pill badge-info">L</span>
 	    {{ user.favourites_count|intcomma }}
 	  </p>
           <p class="card-text">
@@ -98,6 +97,19 @@
 	  unfollow</button>
       </div>
       {% endif %}
+
+      {% if user.followed == True %}
+      <div class="float-left pl-3"
+	   style="font-size:0.7rem">
+	フォロー<br>されています
+      </div>
+      {% else %}
+      <div class="float-left pl-2"
+	   style="font-size:0.7rem">
+	フォロー<br>されていません
+      </div>
+      {% endif %}
+
       {% if user.neglect == False %}
       <div class="neglect_{{ user.user_id }}">
 	<button style="font-size:12px"

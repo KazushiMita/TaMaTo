@@ -149,12 +149,12 @@ class ActedUserList(TemplateView,LoginRequiredMixin):
                     defaults=defaults,
                 )
                 obj.save()
-        return render(request, self.template_name, context=context)
+        return render(request, self.template_name)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['acted_users'] = TWUser.objects.filter(
-            logined_user_id=self.request.user.id, acted=True)
+            logined_user_id=self.request.user.id, acted=True, neglect=False).order_by('-followers_count')
         return context
 
 

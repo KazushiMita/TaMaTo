@@ -1,7 +1,7 @@
 {% extends "./_base.html" %}
-
 {% block title %}Acted Users - TaMaTo{% endblock %}
-
+{% load static %}
+{% load humanize %}
 {% block content %}
 <div class="container">
   <div class="row m-3">
@@ -12,32 +12,193 @@
       </form>
     </div>
   </div>
-  <div class="row">
-    <div class="col">
-      <table class="table table-striped">
-	<thead>
-	  <tr>
-	    <th>#</th>
-	    <th>name</th>
-	    <th>followers</th>
-	    <th>button</th>
-	  </tr>
-	</thead>
-	<tbody class="table table-striped">
-	  {% for au in acted_users %}
-	  <tr>
-	    <td></td>
-	    <td>{{ au.name }}</td>
-	    <td>{{ au.followers_count }}</td>
-	    <td></td>
-	  </tr>
-	  {% endfor %}
-	</tbody>
-      </table>
+</div>
+
+<div class="container">
+  {% for user in acted_users %}
+  <div class="card mb-3 card_{{ user.user_id }}" style="width: 100%;">
+    <div class="row no-gutters">
+      <div class="col-md-1 align-self-center text-center">
+	{{ count_pre_page|add:forloop.counter }}
+      </div>
+      <div class="col-md-3 align-self-center">
+	<div class="">
+	  <a href="https://twitter.com/{{ user.screen_name }}" target="_blank">
+	    <img class="card-img mx-auto d-block" src="{{ user.profile_image_url }}" style="height:64px; width:64px;"/>
+	  </a>
+	</div>
+      </div>
+      <div class="col-md-8">
+	<div class="card-body">
+          <h5 class="card-title">{{ user.name }}
+	  {% if user.protected is True %}
+	  <img src={% static '/protected.png' %} />
+	  {% endif %}</h5>
+
+          <p class="card-text">
+	    <span class="badge badge-pill badge-info">T</span>
+	    {{ user.statuses_count|intcomma }}
+	    <span class="badge badge-pill badge-primary"><</span>
+	    {{ user.followers_count|intcomma }}
+	    <span class="badge badge-pill badge-info">></span>
+	    {{ user.friends_count|intcomma }}
+	    <span class="badge badge-pill badge-info">L</span>
+	    {{ user.favourites_count|intcomma }}
+	  </p>
+          <p class="card-text">
+	    <small class="text-muted">
+	      <div style="font-size:0.7rem">{{ user.description|truncatechars:200 }}</div>
+	    </small>
+	  </p>
+	</div>
+      </div>
+    </div>
+    <div class="card-footer text-muted">
+      {% if user.following == False %}
+      <div class="follow_{{ user.user_id }}">
+	<button style="font-size:12px"
+		class="btn btn-primary float-left follow"
+		name="{{ user.user_id }}">
+	  follow</button>
+      </div>
+      {% else %}
+      <div class="unfollow_{{ user.user_id }}">
+	<button style="font-size:12px"
+		class="btn btn-outline-secondary float-left unfollow"
+		name="{{ user.user_id }}">
+	  unfollow</button>
+      </div>
+      {% endif %}
+
+      {% if user.followed == True %}
+      <div class="float-left pl-3"
+	   style="font-size:0.7rem">
+	フォロー<br>されています
+      </div>
+      {% else %}
+      <div class="float-left pl-2"
+	   style="font-size:0.7rem">
+	フォロー<br>されていません
+      </div>
+      {% endif %}
+
+      {% if user.neglect == False %}
+      <div class="neglect_{{ user.user_id }}">
+	<button style="font-size:12px"
+		class="btn btn-danger float-right neglect"
+		name="{{ user.user_id }}">
+	  neglect</button>
+      </div>
+      {% else %}
+      <div class="respect_{{ user.user_id }}">
+	<button style="font-size:12px"
+		class="btn btn-success float-right respect"
+		name="{{ user.user_id }}">
+	  respect</button>
+      </div>
+      {% endif %}
     </div>
   </div>
+  {% endfor %}
 </div>
 {% endblock %}
 
 {% block script %}
+<script>
+ function getCookie(name) {
+   var cookieValue = null;
+   if (document.cookie && document.cookie !== '') {
+     var cookies = document.cookie.split(';');
+     for (var i = 0; i < cookies.length; i++) {
+       var cookie = jQuery.trim(cookies[i]);
+       // Does this cookie string begin with the name we want?
+       if (cookie.substring(0, name.length + 1) === (name + '=')) {
+         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+         break;
+       }
+     }
+   }
+   return cookieValue;
+ }
+ var csrftoken = getCookie('csrftoken');
+ function csrfSafeMethod(method) {
+   // these HTTP methods do not require CSRF protection
+   return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+ }
+ $.ajaxSetup({
+   beforeSend: function(xhr, settings) {
+     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+       xhr.setRequestHeader("X-CSRFToken", csrftoken);
+     }
+   }
+ });
+
+ $(document).on('click', '.follow', function(event) {
+   let request = { user_id : $(this).prop('name'),};
+   $.ajax({
+     url: '{% url "tw_follow" %}',
+     method: 'POST',
+     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+     data: request,
+     async: true,
+     timeout: 10000,
+     datatype: 'json',
+     success: function(data) {
+       $( 'div.follow_'+data.user_id ).html('<button style="font-size:12px" class="btn btn-outline-secondary float-left unfollow" name="'+data.user_id+'">unfollow</button>');
+       $( 'div.follow_'+data.user_id ).attr('class','unfollow_'+data.user_id);
+     }
+   })
+ });
+
+ $(document).on('click', '.unfollow', function(event) {
+   let request = { user_id : $(this).prop('name'),};
+   $.ajax({
+     url: '{% url "tw_unfollow" %}',
+     method: 'POST',
+     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+     data: request,
+     async: true,
+     timeout: 10000,
+     datatype: 'json',
+     success: function(data) {
+       $( 'div.unfollow_'+data.user_id ).html('<button style="font-size:12px" class="btn btn-primary float-left follow" name="'+data.user_id+'">follow</button>');
+       $( 'div.unfollow_'+data.user_id ).attr('class','follow_'+data.user_id);
+     }
+   })
+ });
+</script>
+<script>
+ $(document).on('click', '.neglect', function(event){
+   let request = { user_id : $(this).prop('name'),};
+   $.ajax({
+     url:'{% url "tw_neglect" %}',
+     method: 'POST',
+     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+     data: request,
+     async: true,
+     timeout: 10000,
+     datatype: 'json',
+     success: function(data){
+       $(".card_"+data.user_id).html('');
+     }
+   })
+ });
+
+ $(document).on('click', '.respect', function(event){
+   let request = { user_id : $(this).prop('name'),};
+   $.ajax({
+     url:'{% url "tw_respect" %}',
+     method: 'POST',
+     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+     data: request,
+     async: true,
+     timeout: 10000,
+     datatype: 'json',
+     success: function(data){
+       $("div.respect_"+data.user_id).html('<button style="font-size:12px" class="btn btn-danger float-right neglect" name="'+data.user_id+'">neglect</button>');
+       $("div.respect_"+data.user_id).attr('class','neglect_'+data.user_id);
+     }
+   })
+ });
+</script>
 {% endblock %}
