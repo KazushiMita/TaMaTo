@@ -1,25 +1,16 @@
 {% extends "./_base.html" %}
 {% block content %}
 <div class="container">
-  <div class="row align-items-center">
-    <div class="col">
-      <a class="btn btn-outline-secondary"
-	 href="{% url 'top' %}">Top Page</a>
-    </div>
-    <div class="col">
-    </div>
-    <div class="col">
+  <div class="row justify-content-start align-self-center">
+    <div class="col-3">
       <a class="btn btn-outline-secondary"
 	 href="{% url 'rq_create' %}">Set a New Queue</a>
     </div>
-  </div>
-
-  <div class="row align-items-center m-1">
-    <div class="col">
+    <div class="col-3">
       <form name="rq_do" action="{% url 'rq_do'%}" method="POST">
 	{% csrf_token %}
 	<input type="hidden" id="rq_do_mode" name="rq_do_mode" value="all">
-	<input class="btn-outline-primary" type="submit" value="reRetweet all">
+	<input class="btn-primary" type="submit" value="reRetweet all">
       </form>
       <div id="rq_do_result"></div>
     </div>
@@ -27,59 +18,125 @@
 </div>
 
 <div class="container">
-  <table class="table table-striped">
-    <thead class="thead-light">
-      <tr>
-	<th>author</th>
-	<th>created</th>
-	<th>last<br>retweeted</th>
-	<th>retweet</th>
-	<th>favorite</th>
-	<th>retweeted</th>
-	<th>text</th>
-	<th>in<br>twitter</th>
-	<th>running</th>
-	<th>detail</th>
-	<th>update</th>
-	<th>delete</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for queue in retweetqueue_list %}
-      <tr>
-	<td>{{ queue.user_name }}</td>
-	<td>{{ queue.created_at }}</td>
-	<td>{{ queue.last_retweeted_at }}</td>
-	<td>{{ queue.retweet_count }}</td>
-	<td>{{ queue.favorite_count }}</td>
-	<td>{{ queue.retweeted }}</td>
-	<td>{{ queue.text }}</td>
-	<th><a href="https://twitter.com/{{ queue.user_name }}/status/{{ queue.status_id }}">Twitter<a></th>
-	<td>{{ queue.running }}</td>
-	<td><a href="{% url 'rq_detail' queue.id %}">Detail</a></td>
-	<td><a href="{% url 'rq_update' queue.id %}">Update</a></td>
-	<td><a href="{% url 'rq_delete' queue.id %}">Delete</a></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-<div class="container">
   <div class="row">
-    <div class="col">
-      <a class="twitter-timeline"
-	 data-lang="ja"
-	 data-height="200"
-	 data-tweet-limit="10"
-	 data-chrome="nofooter"
- 	 href="https://twitter.com/{{ screen_name }}?ref_src=twsrc%5Etfw">
-	Tweets by {{ screen_name }}</a>
-      <script async
-	      src="https://platform.twitter.com/widgets.js"
-	      charset="utf-8">
-      </script>
+
+    <div class="col-sm-6">
+      <h4>リリツイートタスク</h4>
+
+      <div class="container"> <!-- Original tweets -->
+	{% for queue in retweetqueue_list %}
+	<div class="card queue_{{ queue.pk }}">
+	  <div class="card-body">
+	    <h5 class="card-title">{{ queue.user_name }}</h5>
+	    <p class="card-text">{{ queue.text }}</p>
+	    <p class="card-text"><small class="text-muted">
+	      <span>{{ queue.last_retweeted_at }}</span>
+	      <span class="badge badge-pill badge-info">
+		RT</span>{{ queue.retweet_count }}
+	      <span class="badge badge-pill badge-danger">
+		Like</span>{{ queue.favorite_count }}
+	      <span>{{ queue.retweeted }}</span>
+	      <span><a class="float-right text-muted"
+		       href="https://twitter.com/{{ queue.user_name }}/status/{{ queue.status_id }}">{{ queue.created_at }}</a></span>
+	    </small></p>
+	    <div class="card-text">
+	      <div class="container">
+		<div class="row justify-content-between">
+		  <div class="col-2">
+		    <div class="running-trigger_{{ queue.pk }}">
+		      {% if queue.running == True %}
+		      <button class="badge badge-primary running-on float-left"
+			      name="{{ queue.pk }}">On</button>
+		      {% else %}
+		      <button class="badge badge-light running-off float-left"
+			      name="{{ queue.pk }}">Off</button>
+		      {% endif %}
+		    </div>
+		  </div>
+		  <div class="col-4">
+		    <div class="border rounded">
+		      <span class="priority float-left badge">
+			{{ queue.priority }}</span>
+		      <span class="up float-left badge">Up</span>
+		      <span class="down float-left badge">Down</span>
+		    </div>
+		  </div>
+		  <div class="col-4">
+		    <div>
+		      <a class="badge-info" style="font-size:0.7rem;"
+			 href="{% url 'rq_detail' queue.id %}">Detail</a>
+		      <a class="badge-success"  style="font-size:0.7rem;"
+			 href="{% url 'rq_update' queue.id %}">Update</a>
+		      <a class="badge-danger" style="font-size:0.7rem;"
+			 href="{% url 'rq_delete' queue.id %}">Delete</a>
+		    </div>
+		  </div>
+		</div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	{% endfor %}
+      </div>
     </div>
+
+
+    <div class="col-sm-6">
+      <h4>ユーザータイムライン<small><button class="reload">更新</button></small></h4>
+      <div class="container"> <!-- User timeline -->
+	{% for t in timeline %}
+	<div class="tl-cards">
+	  <div class="card tweet_{% if t.retweeted_status %}{{ t.retweeted_status.id }}{% else %}{{ t.id }}{% endif %}">
+	    <div class="card-body">
+	      {% if t.retweeted_status %}
+	      <h5 class="card-title">
+		<img class="mr-3" style="height:1.5rem"
+		     src="{{ t.retweeted_status.user.profile_image_url_https }}"/>
+		{{ t.retweeted_status.user.name }}
+		<span class="text-muted" style="font-size:0.5rem">
+		  @{{ t.retweeted_status.user.screen_name }}</span></h5>
+	      {% else %}
+	      <h5 class="card-title">
+		<img class="mr-3" style="height:1.5rem"
+		     src="{{ t.user.profile_image_url_https }}"/>
+		{{ t.user.name }}
+		<span class="text-muted" style="font-size:0.5rem">
+		  @{{ t.user.screen_name }}</span></h5>
+	      {% endif %}
+
+	      <p class="card-text">{{ t.text }}</p>
+	      <p class="card-text"><small class="text-muted">
+		<span class="badge badge-pill badge-info">RT</span>
+		{{ t.retweet_count }}
+		<span class="badge badge-pill badge-danger">Like</span>
+		{{ t.favorite_count }}
+		<a class="float-right text-muted" href="https://twitter.com/{% if t.retweeted_status %}{{ t.retweeted_status.user.screen_name }}{% else %}{{ t.user.screen_name }}{% endif %}/status/{{ t.id }}">
+		  {{ t.created_at }}</a>
+	      </small></p>
+	    </div>
+	    {% if t.entities.media %}
+	    {% for m in t.entities.media %}
+	    <img class="card-img-bottom" style="width:50%" src="{{ m.media_url_https }}" alt="">
+	    {% endfor %}
+	    {% endif %}
+	    <div class="card-text">
+	      <small><div align="left">
+		<button class="add-queue" name="{% if t.retweeted_status %}{{ t.retweeted_status.id }}{% else %}{{ t.id }}{% endif %}"><</button>
+		タスクに追加
+	      </div></small>
+	    </div>
+	  </div>
+	</div>
+	{% endfor %}
+	<div>
+	  <button class="see_more" count="{{ tl_count }}">See more</button>
+	</div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
 {% endblock %}
 
 
@@ -98,6 +155,63 @@
     .done(function(data){
       $('#rq_do_result').text(data);
     })
+ });
+</script>
+<script>
+ $(document).on('click', 'button.add-queue', function(event){
+   let request ={ status_id : $(this).prop('name'),};
+   $.ajax({
+     url: '{% url "add_queue" %}',
+     method: 'POST',
+     data: request,
+     datatype:'json',
+     success: function(data){
+       location.reload();
+     }
+   })
+ });
+</script>
+<script>
+ $(document).on('click', 'button.running-on',function(event){
+   let request = { pk : $(this).prop('name'), };
+   $.ajax({
+     url: '{% url "run_trigger" %}',
+     method: 'POST',
+     data: request,
+     success: function(data){
+       $("div.running-trigger_"+request.pk).html('<button class="badge badge-light running-off float-left" name="'+request.pk+'">Off</button>');
+     }
+   })
+ });
+ $(document).on('click', 'button.running-off',function(event){
+   let request = { pk : $(this).prop('name'), };
+   $.ajax({
+     url: '{% url "run_trigger" %}',
+     method: 'POST',
+     data: request,
+     success: function(data){
+       $("div.running-trigger_"+request.pk).html('<button class="badge badge-primary running-on float-left" name="'+request.pk+'">On</button>');
+     }
+   })
+ });
+</script>
+<script> <!-- on click reload -->
+ $(document).on('click', 'button.reload', function(event){
+   location.reload();
+ });
+</script>
+<script>
+ $(document).on('click', 'button.see_more', function(event){
+   let request = { count:$(this).prop('count'),}
+   $.ajax({
+     url: '{% url "tl_see_more" %}',
+     method:'POST',
+     data: request,
+     datatype: 'json',
+     success: function(data){
+       $('tl-cards').append()
+     }
+   })
  });
 </script>
 {% endblock %}

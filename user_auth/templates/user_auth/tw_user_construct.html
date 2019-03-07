@@ -30,3 +30,11 @@
   </tbody>
 </table>
 {% endblock %}
+
+{% block script %}
+<script>
+ $("form#tw_user_construct").on('click',function(event){
+   $(this).html('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
+ });
+</script>
+{% endblock %}

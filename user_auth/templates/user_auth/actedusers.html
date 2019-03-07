@@ -73,14 +73,21 @@
       {% if user.followed == True %}
       <div class="float-left pl-3"
 	   style="font-size:0.7rem">
-	フォロー<br>されています
+	フォロー<br>されています○
       </div>
       {% else %}
       <div class="float-left pl-2"
 	   style="font-size:0.7rem">
-	フォロー<br>されていません
+	フォロー<br>されていません✗
       </div>
       {% endif %}
+
+      <div class="update_{{ user.user_id }}">
+	<button style="font-size:12px;"
+		class="btn btn-info float-left update"
+		name="{{ user.user_id }}">
+	  update</button>
+      </div>
 
       {% if user.neglect == False %}
       <div class="neglect_{{ user.user_id }}">
@@ -197,6 +204,24 @@
      success: function(data){
        $("div.respect_"+data.user_id).html('<button style="font-size:12px" class="btn btn-danger float-right neglect" name="'+data.user_id+'">neglect</button>');
        $("div.respect_"+data.user_id).attr('class','neglect_'+data.user_id);
+     }
+   })
+ });
+</script>
+<script>
+ $(document).on('click', '.update', function(event){
+   let request = {user_id : $(this).prop('name'),};
+   $.ajax({
+     url:'{% url "tw_update" %}',
+     method:'POST',
+     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+     data: request,
+     async: true,
+     timeout: 10000,
+     datatype: 'json',
+     success: function(data){
+       $("div.update_"+data.user_id).html('<button style="font-size:12px" class="btn float-left updated" name="'+data.user_id+'">updated</button>');
+       $("div.update_"+data.user_id).attr('class','updated_'+data.user_id);
      }
    })
  });

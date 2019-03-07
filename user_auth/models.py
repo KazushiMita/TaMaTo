@@ -51,10 +51,22 @@ class RetweetQueue(models.Model):
     favorite_count = models.IntegerField(default=0)
     retweeted = models.BooleanField(default=False)
     text = models.CharField(max_length=256, blank=True)
-    media_url_https = models.URLField(blank=True)
+    media_url_https = models.TextField(blank=True)
     running = models.BooleanField(default=False)
+    priority = models.IntegerField(default=0)
+    profile_image_url_https = models.URLField(blank=True)
     class Meta:
         unique_together = (('logined_user_id','status_id'),)
+
+
+class Tweet(models.Model):
+    status_id = models.IntegerField(unique=True)
+    author = models.ForeignKey(TWUser,on_delete=False)
+    text = models.TextField()
+    created_at = models.DateTimeField()
+    retweet_count = models.IntegerField(default=0)
+    favorite_count = models.IntegerField(default=0)
+    media_url_https = models.URLField(blank=True)
 
 
 class UserStat(models.Model):

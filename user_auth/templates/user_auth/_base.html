@@ -64,6 +64,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 
+    <script>
+     function getCookie(name) {
+       var cookieValue = null;
+       if (document.cookie && document.cookie !== '') {
+	 var cookies = document.cookie.split(';');
+	 for (var i = 0; i < cookies.length; i++) {
+	   var cookie = jQuery.trim(cookies[i]);
+	   // Does this cookie string begin with the name we want?
+	   if (cookie.substring(0, name.length + 1) === (name + '=')) {
+	     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	     break;
+	   }
+	 }
+       }
+       return cookieValue;
+     }
+     var csrftoken = getCookie('csrftoken');
+     function csrfSafeMethod(method) {
+       // these HTTP methods do not require CSRF protection
+       return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+     }
+     $.ajaxSetup({
+       beforeSend: function(xhr, settings) {
+	 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+	   xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	 }
+       }
+     });
+    </script>
+
     {% block script %}
     {% endblock %}
   </body>

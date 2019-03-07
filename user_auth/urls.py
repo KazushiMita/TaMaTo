@@ -13,12 +13,16 @@ urlpatterns=[
     path('tw_user/unfollow/',views.on_click_unfollow,name='tw_unfollow'),
     path('tw_user/neglect/',views.on_click_neglect,name='tw_neglect'),
     path('tw_user/respect/',views.on_click_respect,name='tw_respect'),
+    path('tw_user/update/',views.on_click_update,name='tw_update'),
     #
     path('statistics/', views.StatsView.as_view(), name='stats'),
     #
     path('actedusers/', views.ActedUserList.as_view(), name='actedusers'),
     #
     path('retweet_queues/', views.RetweetQueueListView.as_view(), name='rqs'),
+    path('retweet_queues/add/', views.on_click_addRetweetQueue, name='add_queue'),
+    path('retweet_queues/trigger/', views.on_click_trigRunning, name='run_trigger'),
+    path('retweet_queues/tl_see_more/', views.getTlSeeMore, name='tl_see_more'),
     path('retweet_queue_create/',
          views.RetweetQueueCreateView.as_view(),
          name='rq_create'),

@@ -28,10 +28,12 @@ class TopView(TemplateView, LoginRequiredMixin):
 
 
 from user_auth.lib.twuser_view import TWUserConstructView,\
-    TWUserDetailView, TWUserListView, on_click_follow, on_click_unfollow,\
-    on_click_neglect, on_click_respect
+    TWUserDetailView, TWUserListView
+from user_auth.lib.twuser_view import on_click_follow, on_click_unfollow,\
+    on_click_neglect, on_click_respect, on_click_update
 from user_auth.lib.stats_view import StatsView
 from user_auth.lib.retweetqueue_view import RetweetQueueListView,\
     RetweetQueueCreateView, RetweetQueueDeleteView, RetweetQueueDetailView,\
-    RetweetQueueUpdateView, doReretweetAndRefavorite
+    RetweetQueueUpdateView, doReretweetAndRefavorite,\
+    on_click_addRetweetQueue, on_click_trigRunning, getTlSeeMore
 from user_auth.lib.actedusers_view import ActedUserList

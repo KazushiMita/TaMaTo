@@ -3,6 +3,7 @@ from project.settings import TW_API_CONSUMER_KEY,\
     TW_API_CONSUMER_SECRET, TW_API_ACCESS_TOKEN, TW_API_ACCESS_TOKEN_SECRET
 from social_django.models import UserSocialAuth
 
+from user_auth.models import Tweet, TWUser
 
 def getTwitterAppApi():
     """ tw_app_api = getTwitterAppApi() """
@@ -23,11 +24,11 @@ def getTwitterUserApi(access_token, access_token_secret):
 
 
 def getLoginedUser(request='',user_id=''):
-    print("dir(request.user) ==>",dir(request.user))
-    print("request.user.id ==>",request.user.id)
-    print("request.user.pk ==>",request.user.pk)
-    print("request.user.pk ==>",request.user.username)
-    print("request.user.social_auth ==>",request.user.social_auth)
+    #print("dir(request.user) ==>",dir(request.user))
+    #print("request.user.id ==>",request.user.id)
+    #print("request.user.pk ==>",request.user.pk)
+    #print("request.user.username ==>",request.user.username)
+    #print("request.user.social_auth ==>",request.user.social_auth)
     if request == '' :
         return UserSocialAuth.objects.get(user_id=user_id)
     elif user_id == '':
@@ -53,3 +54,30 @@ def lookupUsers(api, user_ids, batch_size=100):
         for user in users :
             yield user
 
+
+def getFollowersIds(api, screen_name):
+    for follower_id in tweepy.Cursor(
+            api.followers_ids, screen_name=screen_name).items():
+        yield follower_id
+    
+def isFollowed(api, me, he):
+    for follower_id in getFollowersIds(api, me.screen_name) :
+        if follower_id == he.id :
+            return True
+    return False
+
+# def statuses2tweets(statues):
+#     for s in statuses:
+#         TWUser.objects.get()
+#         defaults={
+#             'author':s.author
+#             'text'
+#             'created_at'
+#             'retweet_count'
+#             'favorite_count'
+#             'media_url_https'
+#         }
+#         obj, updated = Tweet.objects.create_or_update(
+#             status_id=s.id, defaults=defaults)
+#         obj.save()
+#     return 

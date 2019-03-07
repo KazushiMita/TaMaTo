@@ -10,7 +10,7 @@ from user_auth.models import TWUser, Recode
 from user_auth.lib.twitter import getTwitterAppApi, getTwitterUserApi
 from user_auth.lib.twitter import getLoginedUser, getLoginedUserAndAnthorizedApi
 tw_app_api = getTwitterAppApi()
-from user_auth.lib.twitter import lookupUsers
+from user_auth.lib.twitter import lookupUsers, getFollowersIds, isFollowed
 
 import tweepy
 from django.utils import timezone
@@ -67,8 +67,21 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
             ).items()
         ]
 
+        print('total',len(followers_ids))
+        followers_ids_temp = []
+        for follower_id in followers_ids:
+            try:
+                obj = TWUser.objects.get(
+                    logined_user_id=request.user.id,user_id=follower_id)
+                if (now() - obj.modified_at).total_seconds() < 60*60:
+                    followers_ids.remove(follower_id)
+                    followers_ids_temp.append(follower_id)
+            except TWUser.DoesNotExist:
+                pass
+        print('update',len(followers_ids),'not update',len(followers_ids_temp))
+
         for follower in lookupUsers(tw_app_api, followers_ids):
-            print('user :', follower.name)
+            #print('user :', follower.name)
             defaults={
                 'name':follower.name,
                 'screen_name':follower.screen_name,
@@ -95,8 +108,9 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
                 stat['updated_count'] += 1
             else:
                 stat['created_count'] += 1
-            print('updated :', updated)
-            
+            #print('updated :', updated)
+
+        followers_ids = followers_ids + followers_ids_temp
         return followers_ids, stat
 
 
@@ -111,6 +125,19 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
                 screen_name=user.screen_name,
             ).items()
         ]
+
+        print('total',len(friends_ids))
+        friends_ids_temp = []
+        for friend_id in friends_ids:
+            try:
+                obj = TWUser.objects.get(
+                    logined_user_id=request.user.id,user_id=friend_id)
+                if (now() - obj.modified_at).total_seconds() < 60*60:
+                    friends_ids.remove(friend_id)
+                    friends_ids_temp.append(friend_id)
+            except TWUser.DoesNotExist:
+                pass
+        print('update',len(friends_ids),'not update',len(friends_ids_temp))
 
         # exclude followers(who have been updated above.)
         friends_notin_followers_ids = []
@@ -127,7 +154,7 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
 
         # get friend info
         for friend in lookupUsers(tw_app_api, friends_notin_followers_ids):
-            print('user :', friend.name)
+            #print('user :', friend.name)
             defaults={
                 'name':friend.name,
                 'screen_name':friend.screen_name,
@@ -152,7 +179,8 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
                 stat['updated_count'] += 1
             else:
                 stat['created_count'] += 1
-            print('updated :', updated)
+            #print('updated :', updated)
+        friends_ids = friends_ids + friends_ids_temp
         return friends_ids, stat
 
 
@@ -273,3 +301,37 @@ def on_click_respect(request):
             'logined_user_id':logined_user_id,
     }
     return JsonResponse(ret)
+
+def on_click_update(request):
+    target_user_id = request.POST.get('user_id')
+    logined_user_id = request.user.id
+    _, tw_user_api = getLoginedUserAndAnthorizedApi(request)
+    i = tw_app_api.get_user(_.uid)
+    u = tw_user_api.get_user(target_user_id)
+
+    t = TWUser.objects.get(
+        logined_user_id=logined_user_id, user_id=target_user_id)
+
+    t.name = u.name
+    t.screen_name = u.screen_name
+    t.statuses_count = u.statuses_count
+    t.followers_count = t.followers_count
+    t.friends_count = u.friends_count
+    t.favourites_count = u.favourites_count
+    t.listed_count = u.listed_count
+    t.profile_image_url = u.profile_image_url
+    t.description = u.description
+    t.location = u.location
+    t.protected = u.protected
+    t.modified_at = now()
+    # friendship
+    t.following = u.following
+    print('>',t.screen_name, t.following)
+    t.followed = isFollowed(tw_app_api, i, u)
+    print('<',t.screen_name, t.followed)
+    t.save()
+    ret = { 'user_id':target_user_id,
+            'logined_user_id':logined_user_id,
+    }
+    return JsonResponse(ret)
+    
