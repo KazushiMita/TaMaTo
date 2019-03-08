@@ -131,10 +131,12 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
         for friend_id in friends_ids:
             try:
                 obj = TWUser.objects.get(
-                    logined_user_id=request.user.id,user_id=friend_id)
+                    logined_user_id=request.user.id,user_id=friend_id,followed=False)
                 if (now() - obj.modified_at).total_seconds() < 60*60:
                     friends_ids.remove(friend_id)
                     friends_ids_temp.append(friend_id)
+                    obj.following = True
+                    obj.save()
             except TWUser.DoesNotExist:
                 pass
         print('update',len(friends_ids),'not update',len(friends_ids_temp))
