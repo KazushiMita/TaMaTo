@@ -5,7 +5,7 @@
     このボタンで更新プログラムが実行されます。 ==>
     <button class="btn btn-primary construct">更新</button>
   </div>
-  <p class="message">しばらくお待ち下さい。約4000件（フォロワーとフレンドの合計数）で１分位かかります。</p>
+  <p class="message">しばらくお待ち下さい。約1000件（フォロワーとフレンドの合計数）で１分位かかります。それでも異常に長く画面が切り替わらない場合があります。その時は左上の「TaMaTo」をクリックして、トップページに戻ってください。更新履歴が表示されて入れば、処理は終わっています。</p>
 </div>
 
 <table class="table table-striped">
@@ -14,8 +14,8 @@
     <tr>
       <th>modified_at</th>
       <th>proccess_time</th>
-      <th>created_count</th>
-      <th>updated_count</th>
+      <th>c_count</th>
+      <th>u_count</th>
     </tr>
   </thead>
   <tbody>
@@ -39,6 +39,8 @@
      url: '{% url "tuc" %}',
      method: 'POST',
      data:{},
+     timeout: 10000,
+     datatype:'json',
      success: function(){
        $('div.message').html('<div class="message">更新が終わりました。<a href="/user/top">トップページ</a>に移ってください。</div>');
        $('p.message').html('')

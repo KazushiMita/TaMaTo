@@ -45,8 +45,8 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
         context = {}
         context['recodes'] = Recode.objects.filter(
             logined_user_id=self.request.user.id).order_by('-modified_at')[:5]
-        return render(request, self.template_name, context=context)
-
+        #return render(request, self.template_name, context=context)
+        return JsonResponse({})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -98,17 +98,16 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
                 'followed':True,
                 'modified_at':now(),
             }
-            obj, updated = TWUser.objects.update_or_create(
+            obj, created = TWUser.objects.update_or_create(
                 logined_user_id=UserSocialAuth.objects.get(id=self.request.user.id),
                 user_id=follower.id,
                 defaults=defaults,
             )
             obj.save()
-            if updated == True:
-                stat['updated_count'] += 1
-            else:
+            if created == True:
                 stat['created_count'] += 1
-            #print('updated :', updated)
+            else:
+                stat['updated_count'] += 1
 
         followers_ids = followers_ids + followers_ids_temp
         return followers_ids, stat
@@ -173,15 +172,14 @@ class TWUserConstructView(TemplateView,LoginRequiredMixin):
                 'following':True,
                 'modified_at':now(),
             }
-            obj, updated = TWUser.objects.update_or_create(
+            obj, created = TWUser.objects.update_or_create(
                 logined_user_id=UserSocialAuth.objects.get(id=self.request.user.id),
                 user_id=friend_id, defaults=defaults, )
             obj.save()
-            if updated == True:
-                stat['updated_count'] += 1
-            else:
+            if created == True:
                 stat['created_count'] += 1
-            #print('updated :', updated)
+            else:
+                stat['updated_count'] += 1
         friends_ids = friends_ids + friends_ids_temp
         return friends_ids, stat
 
