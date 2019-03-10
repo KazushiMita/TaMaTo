@@ -84,8 +84,8 @@
     <div class="col-sm-6">
       <h4>ユーザータイムライン<small><button class="reload">更新</button></small></h4>
       <div class="container"> <!-- User timeline -->
-	{% for t in timeline %}
 	<div class="tl-cards">
+	  {% for t in timeline %}
 	  <div class="card tweet_{% if t.retweeted_status %}{{ t.retweeted_status.id }}{% else %}{{ t.id }}{% endif %}">
 	    <div class="card-body">
 	      {% if t.retweeted_status %}
@@ -126,10 +126,10 @@
 	      </div></small>
 	    </div>
 	  </div>
+	  {% endfor %}
 	</div>
-	{% endfor %}
 	<div>
-	  <button class="see_more" count="{{ tl_count }}">See more</button>
+	  <button class="see_more" name="{{ tl_count }}">See more</button>
 	</div>
       </div>
     </div>
@@ -196,20 +196,23 @@
  });
 </script>
 <script> <!-- on click reload -->
- $(document).on('click', 'button.reload', function(event){
-   location.reload();
- });
+ $(document).on('click', 'button.reload', function(event){ location.reload();});
 </script>
-<script>
+<script> <!-- See More Link -->
  $(document).on('click', 'button.see_more', function(event){
-   let request = { count:$(this).prop('count'),}
+   let request = { count : $(this).prop('name'),};
    $.ajax({
      url: '{% url "tl_see_more" %}',
      method:'POST',
      data: request,
      datatype: 'json',
+     async: true,
+     timeout: 10000,
      success: function(data){
-       $('tl-cards').append()
+       for (let i = 0, l = data.length; i < l; i++) {
+	 $('div.tl-cards').append('<div class="card tweet_'+data[i].id+'"><div class="card-body">' + '<h5 class="card-title"><img class="mr-3" style="height:1.5rem" src="'+data[i].profile_image_url_https+'"/>'+data[i].name+'<span class="text-muted" style="font-size:0.5rem">@'+data[i].screen_name+'</span></h5><p class="card-text">'+data[i].text+'</p><p class="card-text"><small class="text-muted"><span class="badge badge-pill badge-info">RT</span>'+data[i].retweet_count+'<span class="badge badge-pill badge-danger">Like</span>'+data[i].favorite_count+'<a class="float-right text-muted" href="https://twitter.com/'+data[i].screen_name+'/status/'+data[i].id+'">'+data[i].created_at+'</a></small></p></div>' + '<img class="card-img-bottom" style="width:50%" src="{{ m.media_url_https }}" alt="">' + '<div class="card-text"><small><div align="left"><button class="add-queue" name="'+data[i].id+'"><</button>タスクに追加</div></small></div></div></div>');
+       }
+       $('button.see_more').attr('name',parseInt(request.count)+parseInt(data.length));
      }
    })
  });

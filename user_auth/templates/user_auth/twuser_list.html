@@ -5,16 +5,16 @@
 {% block content %}
 <div class="container">
   <div class="row m-1 p-1">
-    <div class="col-3">
+    <div class="col-sm m-1">
       <a class="btn btn-block btn-primary" href="{% url 'tw_user' 'followers' %}">Followers</a>
     </div>
-    <div class="col-3">
+    <div class="col-sm m-1">
       <a class="btn btn-block btn-primary" href="{% url 'tw_user' 'friends' %}">Friends</a>
     </div>
-    <div class="col-3">
+    <div class="col-sm m-1">
       <a class="btn btn-block btn-primary" href="{% url 'tw_user' 'fol_not_in_fri' %}">Followers not in Friends</a>
     </div>
-    <div class="col-3">
+    <div class="col-sm m-1">
       <a class="btn btn-block btn-primary" href="{% url 'tw_user' 'fri_not_in_fol' %}">Friends not in Followers</a>
     </div>
   </div>
@@ -46,7 +46,7 @@
   {% for user in object_list %}
   <div class="card mb-3 card_{{ user.user_id }}" style="width: 100%;">
     <div class="row no-gutters">
-      <div class="col-md-1 align-self-center text-center">
+      <div class="col-1 align-self-center text-center">
 	{{ count_pre_page|add:forloop.counter }}
       </div>
       <div class="col-md-3 align-self-center">

@@ -5,7 +5,7 @@
 
 <div class="container">
   <div class="row border-bottom m-2">
-    <h2>TaMaTo<small>(Twitter account Manager Tools)</small></h2>
+    <h2>TaMaTo<br><small class="text-muted">(Twitter account Manager Tools)</small></h2>
   </div>
   <div class="row">
     <div class="col-2">version:0.3.20190308a</div>
@@ -20,12 +20,13 @@
   <div class="row border-bottom m-2">
     <h2>基本データベースの更新</h2>
   </div>
+  <p>　基本となるデータベースを更新します。基本とは言っていますが、今の所、フォロワーランキングだけに影響します。</p>
   <div class="row justify-content-center">
-    <div class="col-2">データベースを更新</div>
-    <div class="col-4"><a href="{% url 'tuc' %}">更新</a></div>
+    <div class="col-xs-2">データベースを更新:</div>
+    <div class="col-xs-4"><a href="{% url 'tuc' %}">更新</a></div>
     <div class="w-100"></div>
-    <div class="col-2">最新更新日</div>
-    <div class="col-4">
+    <div class="col-xs-2">最新更新日</div>
+    <div class="col-xs-4">
       {{ recent_recode.modified_at|date:"Y年n月j日(D) G:i:s"}}</div>
   </div>
 </div>
@@ -38,26 +39,46 @@
     <h2>機能</h2>
   </div>
   <div class="row">
-    <div class="col-3 p-1">
+    <div class="col">
       <a href="{% url 'tw_user' 'followers' %}"
-	 class="btn btn-primary btn-lg">
-	Twitter Users List (FollowerRanking)</a>
+	 class="btn btn-primary btn-lg btn-block">
+	フォロワーランキング</a>
+      <div class="p-2">
+      <p>　自分をフォローしているフォロワー(Followers)、自分がフォローしているフレンド(Friends)、自分がフォローされているけどフォロしてない人(Fol not in Fri)、自分がフォローしているけど相手からはフォローされてない人(Fri not in Fol)をそのアカウントのフォロワー順にリストアップします。</p>
+      <p>　リストに表示したくない人＝ネトウヨやアフィ垢などは<b>neglect</b>ボタンで表示できないようにできます。（間違ってneglectしても最下部のnected listから復活させられます。）</p>
+      </div>
     </div>
-    <div class="col-3 p-1">
-      <a href="{% url 'stats' %}"
-	 class="btn btn-primary btn-lg">
-	Users Statistics</a>
-      まだまだ開発中
-    </div>
-    <div class="col-3 p-1">
+  </div>
+  <div class="row">
+    <div class="col">
       <a href="{% url 'actedusers' %}"
-	 class="btn btn-primary btn-lg">
-	ActingUsers (Fol,Rep,RT,Fav)</a>
+	 class="btn btn-primary btn-lg btn-block">
+	アクションユーザー</a>
+      <p>　自分の投稿へのリツイート、いいね、リプライしてきたアカウントをフォロワー順に表示します。neglectリストは、フォロワーランキングと共有です。</p>
     </div>
-    <div class="col-3 p-1">
+  </div>
+  <div class="row">
+    <div class="col">
       <a href="{% url 'rqs' %}"
-	 class="btn btn-primary btn-lg">
-	Re-Retweet Queues</a>
+	 class="btn btn-primary btn-lg btn-block">
+	<b>リ</b>リツイート</a>
+      <p>　自分のユーザータイムライン(自分の投稿とリツイート)からツイートを選び、Re-Retweet allを押すと、リツイートを外して再度リツイート（いいねも同時）します。何件でも登録できますが、やりすぎには注意してください。嫌われます。（ツイートのIDから直接に登録することもできます。）</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <a href="{% url 'stats' %}"
+	 class="btn btn-primary btn-lg btn-block">
+	集計</a>
+      <p>いろんな集計結果を増やしていこうとしいますが、まだまだ開発中です。</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <a href=""
+	 class="btn btn-primary btn-lg btn-block">
+	Multi-Users analytics</a>
+      <p>複数ユーザーを対象にした分析が簡単にできるように考え中。</p>
     </div>
   </div>
 </div>
@@ -75,12 +96,15 @@
     </div>
     <div class="col-2">
       <p><a href="https://twitter.com/{{ user.access_token.screen_name}}">{{ user.access_token.screen_name }}</a></p>
+      <p><a href="https://twitter.com/{{ user.access_token.screen_name}}">{{ user.access_token.screen_name }}</a></p>
     </div>
   </div>
-  <p>user.user_id:{{ user.user_id }}</p>
-  <p>user.id:{{ user.id }}</p>
+  <p style="font-size:8px">user.user_id:{{ user.user_id }}</p>
+  <p style="font-size:8px">user.id:{{ user.id }}</p>
 </div>
 
+<br>
+<br>
 
 <div class="container">
   <div class="row border-bottom m-2">
@@ -95,8 +119,16 @@
   <h4>Client</h4>
   <p><a href="https://tweetdeck.twitter.com/">TweetDeck</a></p>
 </div>
-{% endblock %}
 
+<br>
+<br>
+
+<div class="container">
+  <div class="row border-bottom m-2">
+    <h2>要望フォーム（建設中）</h2>
+  </div>
+</div>
+{% endblock %}
 
 {% block script %}
 {% endblock %}

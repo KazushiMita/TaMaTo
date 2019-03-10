@@ -10,6 +10,8 @@ from user_auth.models import RetweetQueue
 from user_auth.forms import RetweetQueueForm, RetweetQueueUpdateForm
 
 from user_auth.lib.twitter import getLoginedUser, getLoginedUserAndAnthorizedApi
+from user_auth.lib.twitter import getTwitterAppApi
+tw_app_api = getTwitterAppApi()
 
 from django.utils import timezone
 now = timezone.now
@@ -29,14 +31,54 @@ class RetweetQueueListView(ListView, LoginRequiredMixin):
         context['user_id'] = user.user_id
         context['screen_name'] = user.access_token['screen_name']
         tl_count = 20
-        context['timeline'] = tw_user_api.user_timeline(context['screen_name'])[:tl_count]
+        context['timeline'] = tw_user_api.user_timeline(
+            context['screen_name'])[:tl_count]
         context['tl_count'] = tl_count
         return context
 
-
+import tweepy
 def getTlSeeMore(request):
-    pass
-    return JsonResponse({})
+    pre_count = int(request.POST.get('count'))
+    print('POST ==>',request.POST)
+    print('count ==>',request.POST.get('count'))
+    add_count = 20
+    user = getLoginedUser(request)
+    screen_name = user.extra_data['access_token']['screen_name']
+    count, tweets = 0, []
+    for tweet in tweepy.Cursor(
+            tw_app_api.user_timeline, screen_name=screen_name).items():
+        count += 1
+        if count <= pre_count :
+            continue
+        elif ( count > pre_count ) and ( count <= pre_count + add_count ):
+            tweets.append(tweet)
+        else :
+            break
+
+    data = []
+    for tweet in tweets :
+        if 'retweeted_status' in dir(tweet):
+            name = tweet.retweeted_status.user.name
+            id_ = tweet.retweeted_status.user.id
+            screen_name = tweet.retweeted_status.user.screen_name
+            piuh = tweet.retweeted_status.user.profile_image_url_https
+        else:
+            name = tweet.user.name
+            id_ = tweet.user.id
+            screen_name = tweet.user.screen_name
+            piuh = tweet.user.profile_image_url_https
+            
+        data.append({
+            'name':name,
+            'id':id_,
+            'profile_image_url_https':piuh,
+            'screen_name':screen_name,
+            'text':tweet.text,
+            'retweet_count':tweet.retweet_count,
+            'favorite_count':tweet.favorite_count,
+            'creted_at':tweet.created_at,
+        })    
+    return JsonResponse(data, safe=False)
     
 def addRetweetQueue(logined_user_id, status_id):
     user, tw_user_api = getLoginedUserAndAnthorizedApi(user_id=logined_user_id)
