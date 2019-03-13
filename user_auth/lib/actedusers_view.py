@@ -18,7 +18,11 @@ def getOriginalTweets(screen_name, max_length=20):
     ret = []
     for tweet in tweepy.Cursor(
             tw_app_api.user_timeline, screen_name=screen_name).items():
-        if tweet.author.screen_name == screen_name:
+        if 'retweeted_status' in dir(tweet):
+            author = tweet.retweeted_status.author
+        else:
+            author = tweet.author
+        if author.screen_name == screen_name:
             ret.append(tweet)
             print('tweet.text ==>',tweet.text)
         if len(ret) >= max_length:
