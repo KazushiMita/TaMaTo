@@ -45,6 +45,7 @@ class RetweetQueue(models.Model):
     logined_user_id = models.ForeignKey(UserSocialAuth,on_delete=False,to_field='id')
     status_id = models.CharField(max_length=64)
     user_name = models.CharField(max_length=16, blank=False)
+    screen_name = models.CharField(max_length=32, default='')
     created_at = models.DateTimeField(null=True)
     last_retweeted_at = models.DateTimeField(null=True)
     retweet_count = models.IntegerField(default=0)
@@ -75,3 +76,4 @@ class UserStat(models.Model):
     number = models.IntegerField(default=0)
     class Meta:
         unique_together = (('logined_user_id','term'),)
+

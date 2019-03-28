@@ -153,7 +153,7 @@ class ActedUserList(TemplateView,LoginRequiredMixin):
                     defaults=defaults,
                 )
                 obj.save()
-        return render(request, self.template_name)
+        return render(request, self.template_name, context=self.get_context_data())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

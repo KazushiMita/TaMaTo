@@ -41,6 +41,7 @@
      data:{},
      timeout: 10000,
      datatype:'json',
+     async: true,
      success: function(){
        $('div.message').html('<div class="message">更新が終わりました。<a href="/user/top">トップページ</a>に移ってください。</div>');
        $('p.message').html('')

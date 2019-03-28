@@ -330,8 +330,18 @@ def on_click_update(request):
     t.followed = isFollowed(tw_app_api, i, u)
     print('<',t.screen_name, t.followed)
     t.save()
-    ret = { 'user_id':target_user_id,
-            'logined_user_id':logined_user_id,
+    ret = {
+        'user_id':target_user_id,
+        'logined_user_id':logined_user_id,
+        'name' : u.name,
+        'screen_name' : u.screen_name,
+        'statuses_count' : u.statuses_count,
+        'followers_count' : t.followers_count,
+        'friends_count' : u.friends_count,
+        'favourites_count' : u.favourites_count,
+        'listed_count' : u.listed_count,
+        'profile_image_url' : u.profile_image_url,
+        'description' : u.description,
     }
     return JsonResponse(ret)
     

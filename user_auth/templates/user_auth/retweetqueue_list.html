@@ -28,7 +28,12 @@
 	{% for queue in retweetqueue_list %}
 	<div class="card queue_{{ queue.pk }}">
 	  <div class="card-body">
-	    <h5 class="card-title">{{ queue.user_name }}</h5>
+	    <h5 class="card-title">
+	      <img class="mr-3" style="height:1.5rem"
+		   src="{{ queue.profile_image_url_https }}"/>
+	      {{ queue.user_name }}
+	      <span class="text-muted" style="font-size:0.5rem">
+		@{{ queue.screen_name }}</span></h5>
 	    <p class="card-text">{{ queue.text }}</p>
 	    <p class="card-text"><small class="text-muted">
 	      <span>{{ queue.last_retweeted_at }}</span>

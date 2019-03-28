@@ -88,7 +88,14 @@ def addRetweetQueue(logined_user_id, status_id):
         logined_user_id=user_obj,
         status_id=status_id)
     obj.logined_user_id = user_obj
-    obj.user_name = status.user.name
+    if 'retweeted_status' in dir(status):
+        obj.user_name = status.retweeted_status.user.name
+        obj.screen_name = status.retweeted_status.user.screen_name
+        obj.profile_image_url_https = status.retweeted_status.user.profile_image_url_https
+    else:
+        obj.user_name = status.user.name
+        obj.screen_name = status.user.screen_name
+        obj.profile_image_url_https = status.user.profile_image_url_https
     obj.created_at = status.created_at.astimezone()
     obj.retweet_count = status.retweet_count
     obj.favorite_count = status.favorite_count
